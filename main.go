@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gin-web/models"
-	"gin-web/pkg/logging"
-	"gin-web/pkg/redis"
+	"gin-web/pkg/app"
 	"gin-web/pkg/setting"
 	"gin-web/routers"
 	"github.com/fvbock/endless"
@@ -12,10 +10,8 @@ import (
 )
 
 func main() {
-	setting.Setup()
-	models.Setup()
-	logging.Setup()
-	redis.Setup()
+
+	app.Init()
 
 	endless.DefaultReadTimeOut = setting.ServerSetting.ReadTimeout
 	endless.DefaultWriteTimeOut = setting.ServerSetting.WriteTimeout
