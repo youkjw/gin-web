@@ -1,7 +1,6 @@
 package setting
 
 import (
-	"gin-web/models"
 	"github.com/go-ini/ini"
 	"log"
 	"time"
@@ -37,9 +36,6 @@ type Server struct {
 
 var ServerSetting = &Server{}
 
-var DatabaseSetting = &models.Database{}
-var YqwSetting = &models.Yqw{}
-
 type Redis struct {
 	Host string
 	Password string
@@ -53,7 +49,6 @@ var RedisSetting = &Redis{}
 var (
 	Cfg *ini.File
 )
-
 
 func Setup(){
 	var err error
@@ -87,17 +82,7 @@ func LoadServer () {
 }
 
 func LoadApp () {
-	err := Cfg.Section("database").MapTo(DatabaseSetting)
-	if err != nil {
-		log.Fatalf("Cfg.MapTo DatabaseSetting err: %v", err)
-	}
-
-	err = Cfg.Section("yqw").MapTo(YqwSetting)
-	if err != nil {
-		log.Fatalf("Cfg.MapTo YqwSetting err: %v", err)
-	}
-
-	err = Cfg.Section("redis").MapTo(RedisSetting)
+	err := Cfg.Section("redis").MapTo(RedisSetting)
 	if err != nil {
 		log.Fatalf("Cfg.MapTo RedisSetting err:%v", err)
 	}

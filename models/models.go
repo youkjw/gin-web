@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"gin-web/pkg/setting"
+	"github.com/go-ini/ini"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"
@@ -22,7 +22,14 @@ type Yqw struct {
 	Database
 }
 
+var DatabaseSetting = &Database{}
+var YqwSetting = &Yqw{}
+
 var db map[string]*gorm.DB
+
+var (
+	Cfg *ini.File
+)
 
 type Model struct {
 	ID int `grom:"primary_key;autoIncrement" json:"id"`
@@ -31,8 +38,18 @@ type Model struct {
 }
 
 func Setup() {
-	setting.DatabaseSetting.connect()
-	setting.YqwSetting.connect()
+	err := Cfg.Section("database").MapTo(DatabaseSetting)
+	if err != nil {
+		log.Fatalf("Cfg.MapTo DatabaseSetting err: %v", err)
+	}
+
+	err = Cfg.Section("yqw").MapTo(YqwSetting)
+	if err != nil {
+		log.Fatalf("Cfg.MapTo YqwSetting err: %v", err)
+	}
+
+	DatabaseSetting.connect()
+	YqwSetting.connect()
 }
 
 func (database *Database) connect() {

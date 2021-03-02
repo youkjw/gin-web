@@ -17,7 +17,7 @@ type Article struct {
 func GetArticle (maps interface{}) (*Article, error){
 	var article Article
 	db["go"].Where(maps).First(&article)
-	err := db.Model(&article).Related(&article.Tag).Error
+	err := db["go"].Model(&article).Related(&article.Tag).Error
 
 	return &article, err
 }
