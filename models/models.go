@@ -15,15 +15,12 @@ type Database struct {
 	Password string
 	Host string
 	Name string
+	DbName string
 	TablePrefix string
 }
 
-type Yqw struct {
-	Database
-}
-
 var DatabaseSetting = &Database{}
-var YqwSetting = &Yqw{}
+var YdSetting = &Database{}
 
 var db map[string]*gorm.DB
 
@@ -39,13 +36,17 @@ func Setup() {
 		log.Fatalf("Cfg.MapTo DatabaseSetting err: %v", err)
 	}
 
-	err = setting.Cfg.Section("yqw").MapTo(YqwSetting)
+	err = setting.Cfg.Section("yd").MapTo(YdSetting)
 	if err != nil {
 		log.Fatalf("Cfg.MapTo YqwSetting err: %v", err)
 	}
 
+	fmt.Println(DatabaseSetting)
+	fmt.Println(YdSetting)
+
+	db = make(map[string]*gorm.DB)
 	DatabaseSetting.connect()
-	YqwSetting.connect()
+	YdSetting.connect()
 }
 
 func (database *Database) connect() {
@@ -55,7 +56,7 @@ func (database *Database) connect() {
 	)
 
 	dbType = database.Type
-	dbName = database.Name
+	dbName = database.DbName
 	user = database.User
 	password = database.Password
 	host = database.Host
