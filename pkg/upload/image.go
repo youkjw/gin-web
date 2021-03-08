@@ -2,9 +2,11 @@ package upload
 
 import (
 	"fmt"
+	"github.com/golang/freetype"
 	"image"
 	"image/draw"
 	"image/jpeg"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"os"
@@ -147,7 +149,56 @@ func (i *Image) MergeImage(name string, bg string) (string, error) {
 	draw.Draw(jpg, jpg.Bounds(), bgImage, bgImage.Bounds().Min, draw.Over)
 	draw.Draw(jpg, jpg.Bounds(), distImage, distImage.Bounds().Min.Sub(image.Pt(i.Pt.X, i.Pt.Y)), draw.Over)
 
-	jpeg.Encode(mergedF, jpg, nil)
+	err = jpeg.Encode(mergedF, jpg, nil)
+	if err != nil {
+		return "", err
+	}
 
 	return filename, nil
+}
+
+type DrawText struct {
+	FontSrc string
+	MergeF *os.File
+
+	Title string
+	X    int
+	Y    int
+	Size float64
+}
+
+func (d *DrawText) DrawText() error {
+	fontSourceBytes, err := ioutil.ReadFile(d.FontSrc)
+	if err != nil {
+		return err
+	}
+
+	trueTypeFont, err := freetype.ParseFont(fontSourceBytes)
+	if err != nil {
+		return err
+	}
+
+	rgba := image.NewRGBA(image.Rect(0, 100, 100, 100))
+	//draw.Draw(rgba, rgba.Bounds(), image.Black , rgba.Bounds().Min, draw.Src)
+
+	fc := freetype.NewContext()
+	fc.SetDPI(72)
+	fc.SetFont(trueTypeFont)
+	fc.SetFontSize(d.Size)
+	fc.SetClip(rgba.Bounds())
+	fc.SetDst(rgba)
+	fc.SetSrc(image.Black)
+
+	pt := freetype.Pt(d.X, d.Y)
+	_, err = fc.DrawString(d.Title, pt)
+	if err != nil {
+		return err
+	}
+
+	err = jpeg.Encode(d.MergeF, rgba, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

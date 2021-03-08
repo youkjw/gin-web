@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"gin-web/pkg/app"
 	e "gin-web/pkg/error"
+	"gin-web/pkg/file"
 	"gin-web/pkg/logging"
 	"gin-web/pkg/qrcode"
+	"gin-web/pkg/setting"
 	"gin-web/pkg/upload"
 	"github.com/astaxie/beego/validation"
 	"github.com/boombuler/barcode/qr"
@@ -48,6 +50,24 @@ func GenerateQrCode(c *gin.Context) {
 	filename, err = imageT.MergeImage("post-" + strconv.FormatInt(time.Now().Unix(), 10), bgSrc)
 	if err != nil {
 		logging.Error(fmt.Sprintf("image merge err:%v", err))
+		appG.Response(http.StatusOK, e.ERROR_QRCODE_GENERATE_FAIL, nil)
+		return
+	}
+
+	qrFile, _ := file.Open(upload.GetImageFullPath() + filename)
+	defer qrFile.Close()
+	drawT := &upload.DrawText{
+		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
+		MergeF: qrFile,
+		Title:  "Golang Gin 系列文章",
+		X:      80,
+		Y:      160,
+		Size:   42,
+	}
+
+	err = drawT.DrawText()
+	if err != nil {
+		logging.Error(fmt.Sprintf("image draw err:%v", err))
 		appG.Response(http.StatusOK, e.ERROR_QRCODE_GENERATE_FAIL, nil)
 		return
 	}
