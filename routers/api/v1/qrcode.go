@@ -13,6 +13,7 @@ import (
 	"github.com/boombuler/barcode/qr"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -55,6 +56,7 @@ func GenerateQrCode(c *gin.Context) {
 	}
 
 	qrFile, _ := file.Open(upload.GetImageFullPath() + filename)
+	//qrFile, err := os.Create(upload.GetImageFullPath() + upload.GetImageName("qrcode"))
 	defer qrFile.Close()
 	drawT := &upload.DrawText{
 		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
@@ -62,7 +64,7 @@ func GenerateQrCode(c *gin.Context) {
 		Title:  "Golang Gin 系列文章",
 		X:      80,
 		Y:      160,
-		Size:   42,
+		Size:   20,
 	}
 
 	err = drawT.DrawText()
@@ -75,4 +77,33 @@ func GenerateQrCode(c *gin.Context) {
 	appG.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
 		"qrcode_url" : upload.GetImageFullUrl(filename),
 	})
+}
+
+func GenerateDraw(c *gin.Context) {
+	appG := app.Gin{c}
+
+	qrFile, err := os.Create(upload.GetImageFullPath() + upload.GetImageName("draw"))
+	if err != nil {
+		logging.Error(fmt.Sprintf("os create err:%v", err))
+		appG.Response(http.StatusOK, e.ERROR_QRCODE_GENERATE_FAIL, nil)
+		return
+	}
+
+	drawT := &upload.DrawText{
+		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
+		MergeF: qrFile,
+		Title:  "Golang Gin 系列文章",
+		X:      80,
+		Y:      160,
+		Size:   20,
+	}
+
+	err = drawT.DrawText()
+	if err != nil {
+		logging.Error(fmt.Sprintf("image draw err:%v", err))
+		appG.Response(http.StatusOK, e.ERROR_QRCODE_GENERATE_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }

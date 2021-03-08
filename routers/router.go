@@ -46,14 +46,15 @@ func InitRouter() *gin.Engine {
 		apiv1.PUT("/articles/:id", v1.EditArticle)
 		//删除指定文章
 		apiv1.DELETE("/articles/:id", v1.DeleteArticle)
-
-		//获取二维码
-		apiv1.POST("/qrcode", v1.GenerateQrCode)
 	}
 
 	{
 		r.POST("/api/auth", api.GetAuth)
 		r.POST("/api/upload", api.UploadImage)
+		//生成二维码
+		r.POST("/api/qrcode", v1.GenerateQrCode)
+		//生成文字
+		r.POST("/api/draw", v1.GenerateDraw)
 	}
 
 	//http

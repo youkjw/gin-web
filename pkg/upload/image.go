@@ -178,8 +178,8 @@ func (d *DrawText) DrawText() error {
 		return err
 	}
 
-	rgba := image.NewRGBA(image.Rect(0, 100, 100, 100))
-	//draw.Draw(rgba, rgba.Bounds(), image.Black , rgba.Bounds().Min, draw.Src)
+	rgba := image.NewRGBA(image.Rect(0, 0, 550, 700))
+	draw.Draw(rgba, rgba.Bounds(), image.White , rgba.Bounds().Min, draw.Src)
 
 	fc := freetype.NewContext()
 	fc.SetDPI(72)
