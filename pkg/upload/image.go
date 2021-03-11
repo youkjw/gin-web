@@ -158,9 +158,8 @@ func (i *Image) MergeImage(name string, bg string) (string, error) {
 }
 
 type DrawText struct {
-	FileName string
+	FileSrc string
 	FontSrc string
-	MergeF *os.File
 
 	Title string
 	X    int
@@ -179,13 +178,25 @@ func (d *DrawText) DrawText() error {
 		return err
 	}
 
-	bgImage, err := jpeg.Decode(d.MergeF)
-	if err != nil {
-		return err
-	}
-
 	rgba := image.NewRGBA(image.Rect(0, 0, 550, 700))
-	draw.Draw(rgba, bgImage.Bounds(), bgImage , bgImage.Bounds().Min, draw.Src)
+
+	bgFile, err := gf.Open(d.FileSrc)
+	if err == nil {
+		bgFileByte, err := ioutil.ReadFile(d.FileSrc)
+		if err != nil {
+			return err
+		}
+
+		if len(bgFileByte) > 0 {
+			bgImage, err := jpeg.Decode(bgFile)
+			if err != nil {
+				return err
+			}
+			draw.Draw(rgba, bgImage.Bounds(), bgImage, bgImage.Bounds().Min, draw.Src)
+		} else {
+			draw.Draw(rgba, rgba.Bounds(), image.White, rgba.Bounds().Min, draw.Src)
+		}
+	}
 
 	fc := freetype.NewContext()
 	fc.SetDPI(72)
@@ -202,10 +213,10 @@ func (d *DrawText) DrawText() error {
 	}
 
 	//保存到新文件中
-	newfile, _ := os.Create(GetImageFullPath() + d.FileName)
-	defer newfile.Close()
+	//newfile, _ := os.Create(d.FileSrc)
+	//defer newfile.Close()
 
-	err = jpeg.Encode(newfile, rgba, nil)
+	err = jpeg.Encode(bgFile, rgba, nil)
 	if err != nil {
 		return err
 	}

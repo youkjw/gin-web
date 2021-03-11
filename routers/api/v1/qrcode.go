@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gin-web/pkg/app"
 	e "gin-web/pkg/error"
-	"gin-web/pkg/file"
 	"gin-web/pkg/logging"
 	"gin-web/pkg/qrcode"
 	"gin-web/pkg/setting"
@@ -13,7 +12,6 @@ import (
 	"github.com/boombuler/barcode/qr"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 )
@@ -55,13 +53,9 @@ func GenerateQrCode(c *gin.Context) {
 		return
 	}
 
-	qrFile, _ := file.Open(upload.GetImageFullPath() + filename)
-	//qrFile, err := os.Create(upload.GetImageFullPath() + upload.GetImageName("qrcode"))
-	defer qrFile.Close()
 	drawT := &upload.DrawText{
-		FileName: filename,
+		FileSrc: filename,
 		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
-		MergeF: qrFile,
 		Title:  "Golang Gin 系列文章",
 		X:      80,
 		Y:      160,
@@ -83,27 +77,19 @@ func GenerateQrCode(c *gin.Context) {
 func GenerateDraw(c *gin.Context) {
 	appG := app.Gin{c}
 
-	qrFile, err := os.Create(upload.GetImageFullPath() + upload.GetImageName("draw"))
-	if err != nil {
-		logging.Error(fmt.Sprintf("os create err:%v", err))
-		appG.Response(http.StatusOK, e.ERROR_QRCODE_GENERATE_FAIL, nil)
-		return
-	}
-
 	drawT := &upload.DrawText{
-		FileName:
+		FileSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.ImageSavePath + upload.GetImageName("draw"),
 		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
-		MergeF: qrFile,
 		Title:  "Golang Gin 系列文章",
 		X:      80,
 		Y:      160,
 		Size:   20,
 	}
 
-	err = drawT.DrawText()
+	err := drawT.DrawText()
 	if err != nil {
 		logging.Error(fmt.Sprintf("image draw err:%v", err))
-		appG.Response(http.StatusOK, e.ERROR_QRCODE_GENERATE_FAIL, nil)
+		appG.Response(http.StatusOK, e.ERROR_IMAGE_MERGE_FAIL, nil)
 		return
 	}
 
