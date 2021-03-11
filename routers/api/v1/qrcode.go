@@ -54,7 +54,7 @@ func GenerateQrCode(c *gin.Context) {
 	}
 
 	drawT := &upload.DrawText{
-		FileSrc: filename,
+		FileSrc: upload.GetImageFullPath() + filename,
 		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
 		Title:  "Golang Gin 系列文章",
 		X:      80,

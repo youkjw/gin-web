@@ -213,10 +213,10 @@ func (d *DrawText) DrawText() error {
 	}
 
 	//保存到新文件中
-	//newfile, _ := os.Create(d.FileSrc)
-	//defer newfile.Close()
+	newfile, _ := os.Create(d.FileSrc)
+	defer newfile.Close()
 
-	err = jpeg.Encode(bgFile, rgba, nil)
+	err = jpeg.Encode(newfile, rgba, nil)
 	if err != nil {
 		return err
 	}
