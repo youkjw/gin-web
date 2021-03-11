@@ -59,6 +59,7 @@ func GenerateQrCode(c *gin.Context) {
 	//qrFile, err := os.Create(upload.GetImageFullPath() + upload.GetImageName("qrcode"))
 	defer qrFile.Close()
 	drawT := &upload.DrawText{
+		FileName: filename,
 		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
 		MergeF: qrFile,
 		Title:  "Golang Gin 系列文章",
@@ -90,6 +91,7 @@ func GenerateDraw(c *gin.Context) {
 	}
 
 	drawT := &upload.DrawText{
+		FileName:
 		FontSrc: setting.AppSetting.RuntimeRootPath + setting.AppSetting.FontSavePath + "msyhbd.ttc",
 		MergeF: qrFile,
 		Title:  "Golang Gin 系列文章",

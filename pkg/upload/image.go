@@ -158,6 +158,7 @@ func (i *Image) MergeImage(name string, bg string) (string, error) {
 }
 
 type DrawText struct {
+	FileName string
 	FontSrc string
 	MergeF *os.File
 
@@ -178,8 +179,13 @@ func (d *DrawText) DrawText() error {
 		return err
 	}
 
+	bgImage, err := jpeg.Decode(d.MergeF)
+	if err != nil {
+		return err
+	}
+
 	rgba := image.NewRGBA(image.Rect(0, 0, 550, 700))
-	draw.Draw(rgba, rgba.Bounds(), image.White , rgba.Bounds().Min, draw.Src)
+	draw.Draw(rgba, bgImage.Bounds(), bgImage , bgImage.Bounds().Min, draw.Src)
 
 	fc := freetype.NewContext()
 	fc.SetDPI(72)
@@ -195,7 +201,11 @@ func (d *DrawText) DrawText() error {
 		return err
 	}
 
-	err = jpeg.Encode(d.MergeF, rgba, nil)
+	//保存到新文件中
+	newfile, _ := os.Create(GetImageFullPath() + d.FileName)
+	defer newfile.Close()
+
+	err = jpeg.Encode(newfile, rgba, nil)
 	if err != nil {
 		return err
 	}

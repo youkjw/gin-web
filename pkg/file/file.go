@@ -60,7 +60,7 @@ func Open(src string) (*os.File, error) {
 		return nil, fmt.Errorf("file.CheckPermission Permission denied src: %s", src)
 	}
 
-	f, err := os.OpenFile(src, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	f, err := os.OpenFile(src, os.O_APPEND|os.O_CREATE|os.O_RDWR, os.ModeAppend|os.ModePerm)
 	if err != nil {
 		return nil, err
 	}
