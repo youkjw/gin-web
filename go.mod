@@ -3,7 +3,6 @@ module gin-web
 go 1.15
 
 require (
-	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2
 	github.com/astaxie/beego v1.12.3
 	github.com/boombuler/barcode v1.0.1
@@ -18,10 +17,9 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.2.0 // indirect
-	github.com/robfig/cron v1.2.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
-	github.com/tealeg/xlsx v1.0.5
 	github.com/ugorji/go v1.2.4 // indirect
 	github.com/unknwon/com v1.0.1
 	github.com/xuri/efp v0.0.0-20210128032744-13be4fd5dcb5 // indirect
